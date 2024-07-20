@@ -20,7 +20,7 @@ const row = (bill) => {
 
 const rows = (data) => {
   if (data && data.length) {
-    const sortedBills = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedBills = data.sort((a, b) => new Date(b.date) - new Date(a.date)); // Debugging: added sort by date (most recent first)
     return sortedBills.map((bill) => row(bill)).join('');
   } else {
     return '';
