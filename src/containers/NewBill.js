@@ -49,13 +49,13 @@ export default class NewBill {
       errorElement.textContent =
         'Le type de fichier attendu est JPG, JPEG et PNG. Le ' +
         fileType.toUpperCase() +
-        " n'est pas pris en charge. ";
+        " n'est pas pris en charge.";
       errorElement.style.color = 'red';
       fileInput.parentNode.appendChild(errorElement);
       fileInput.value = '';
       setTimeout(() => {
         errorElement.remove();
-      }, 5000);
+      }, 10000);
     }
   };
   handleSubmit = (e) => {
