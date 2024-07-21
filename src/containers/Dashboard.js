@@ -63,8 +63,6 @@ export const getStatus = (index) => {
       return 'accepted';
     case 3:
       return 'refused';
-    default:
-      return ''; // Debugging: Added Default Case for processing incorrect indices
   }
 };
 
@@ -73,8 +71,6 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-    this.counter = 0; // Debugging: added the initialization of the variable
-    this.index = 0; // Debugging: added the initialization of the variable
     $('#arrow-icon1').click((e) => this.handleShowTickets(e, bills, 1));
     $('#arrow-icon2').click((e) => this.handleShowTickets(e, bills, 2));
     $('#arrow-icon3').click((e) => this.handleShowTickets(e, bills, 3));
@@ -105,13 +101,13 @@ export default class {
       this.counter++;
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' });
+
       $('.dashboard-right-container div').html(`
-    <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
-  `);
+        <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+      `);
       $('.vertical-navbar').css({ height: '120vh' });
       this.counter++;
     }
-
     $('#icon-eye-d').click(this.handleClickIconEye);
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill));
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill));
@@ -175,8 +171,7 @@ export default class {
           return bills;
         })
         .catch((error) => {
-          console.error(error); // Debugging: Added an error output to the console
-          alert('Erreur lors de la récupération des factures. Veuillez réessayer plus tard.'); // Debugging: Added error notification
+          throw error;
         });
     }
   };
