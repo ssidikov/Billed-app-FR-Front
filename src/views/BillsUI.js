@@ -17,10 +17,20 @@ const row = (bill) => {
     </tr>
     `;
 };
+// Check if the date is valid
+const dateIsValid = (date) => {
+  return !Number.isNaN(new Date(date).getTime());
+};
 
 const rows = (data) => {
   if (data && data.length) {
-    const sortedBills = data.sort((a, b) => new Date(b.date) - new Date(a.date)); // Debugging: added sort by date (most recent first)
+    const sortedBills = data
+      .filter((bill) => dateIsValid(bill.date))
+      .sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateB - dateA;
+      });
     return sortedBills.map((bill) => row(bill)).join('');
   } else {
     return '';
