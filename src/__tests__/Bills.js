@@ -51,6 +51,7 @@ describe('Given I am connected as an employee', () => {
 describe('Given I am connected as Employee and I am on Bills page', () => {
   describe('When I click on the icon eye', () => {
     test('It should launch the handleClickIconEye function and open the modal', () => {
+      // Mock localStorage
       Object.defineProperty(window, 'localStorage', { value: localStorageMock });
       window.localStorage.setItem(
         'user',
@@ -58,32 +59,34 @@ describe('Given I am connected as Employee and I am on Bills page', () => {
           type: 'Employee',
         })
       );
+
       // Render the BillsUI with test data
       document.body.innerHTML = BillsUI({ data: bills });
+
       // Define navigation function
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-      const store = null;
+
       // Create an instance of Bills
       const billsInit = new Bills({
         document,
         onNavigate,
-        store,
+        store: null,
         localStorage: window.localStorage,
       });
 
       // Mock jQuery modal function
       $.fn.modal = jest.fn();
 
-      //Getting the first icon eye
+      // Get the first icon eye
       const eye = screen.getAllByTestId('icon-eye')[0];
 
-      //Mocking the handleClickIconEye function
+      // Mock handleClickIconEye function
       const handleClickIconEye = jest.fn(() => billsInit.handleClickIconEye(eye));
       eye.addEventListener('click', handleClickIconEye);
 
-      //Simulation of a click on the icon
+      // Simulate a click on the icon
       userEvent.click(eye);
 
       // Assertions
@@ -104,7 +107,7 @@ describe('Given I am a user connected as Employee', () => {
       // Render the BillsUI with test data
       document.body.innerHTML = BillsUI({ data: bills });
 
-      //Creation of an instance of Bills
+      // Create an instance of Bills
       const billsUI = new Bills({
         document,
         onNavigate,
@@ -163,9 +166,7 @@ describe('Given I am a user connected as Employee', () => {
       test('fetches bills from an API and fails with 404 message error', async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {
-            list: () => {
-              return Promise.reject(new Error('Erreur 404'));
-            },
+            list: () => Promise.reject(new Error('Erreur 404')),
           };
         });
         window.onNavigate(ROUTES_PATH.Bills);
