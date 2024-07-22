@@ -6,12 +6,11 @@ import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/dom';
 import BillsUI from '../views/BillsUI.js';
 import { bills } from '../fixtures/bills.js';
-import { ROUTES_PATH } from '../constants/routes.js';
+import { ROUTES, ROUTES_PATH } from '../constants/routes.js';
 import { localStorageMock } from '../__mocks__/localStorage.js';
 import Bills from '../containers/Bills.js';
 import mockStore from '../__mocks__/store.js';
 import userEvent from '@testing-library/user-event';
-
 import router from '../app/Router.js';
 
 jest.mock('../app/store', () => mockStore);
@@ -45,32 +44,87 @@ describe('Given I am connected as an employee', () => {
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
     });
+  });
+});
 
-    test('Then when I click on the icon eye it should open the modal', () => {
-      document.body.innerHTML = BillsUI({
-        data: bills,
-      });
-
-      //Init bills
+// Testing the handleClickIconEye function
+describe('Given I am connected as Employee and I am on Bills page', () => {
+  describe('When I click on the icon eye', () => {
+    test('It should launch the handleClickIconEye function and open the modal', () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+      window.localStorage.setItem(
+        'user',
+        JSON.stringify({
+          type: 'Employee',
+        })
+      );
+      // Render the BillsUI with test data
+      document.body.innerHTML = BillsUI({ data: bills });
+      // Define navigation function
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-      const billsList = new Bills({
+      const store = null;
+      // Create an instance of Bills
+      const billsInit = new Bills({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+
+      // Mock jQuery modal function
+      $.fn.modal = jest.fn();
+
+      //Getting the first icon eye
+      const eye = screen.getAllByTestId('icon-eye')[0];
+
+      //Mocking the handleClickIconEye function
+      const handleClickIconEye = jest.fn(() => billsInit.handleClickIconEye(eye));
+      eye.addEventListener('click', handleClickIconEye);
+
+      //Simulation of a click on the icon
+      userEvent.click(eye);
+
+      // Assertions
+      expect(handleClickIconEye).toHaveBeenCalled();
+      expect($.fn.modal).toHaveBeenCalledWith('show');
+    });
+  });
+});
+
+// Testing the handleClickNewBill function and the rendering of the NewBill page
+describe('Given I am a user connected as Employee', () => {
+  describe('When I click on the button to create a new bill', () => {
+    test('It should render NewBill page', () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
+      // Render the BillsUI with test data
+      document.body.innerHTML = BillsUI({ data: bills });
+
+      //Creation of an instance of Bills
+      const billsUI = new Bills({
         document,
         onNavigate,
         store: null,
         localStorage: window.localStorage,
       });
-      // modal simulation
-      $.fn.modal = jest.fn();
-      const icon = screen.getAllByTestId('icon-eye')[0];
-      const handleClickIconEye = jest.fn(() => billsList.handleClickIconEye(icon));
-      icon.addEventListener('click', handleClickIconEye);
-      // Click on the icon
-      userEvent.click(icon);
-      expect(handleClickIconEye).toHaveBeenCalled();
-      const modale = document.getElementById('modaleFile');
-      expect(modale).toBeTruthy();
+
+      // Mock handleClickNewBill function
+      const handleClickNewBill = jest.fn(billsUI.handleClickNewBill);
+
+      // Get the new bill button
+      const btnNewBill = screen.getByTestId('btn-new-bill');
+      btnNewBill.addEventListener('click', handleClickNewBill);
+
+      // Simulate a click on the button
+      userEvent.click(btnNewBill);
+
+      // Assertions
+      expect(handleClickNewBill).toHaveBeenCalled();
+      expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy();
     });
   });
 });
