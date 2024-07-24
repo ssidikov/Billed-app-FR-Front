@@ -25,6 +25,12 @@ export default class NewBill {
     const fileType = file.type.split('/')[1];
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
 
+    // Remove any existing error messages
+    const existingError = this.document.querySelector(`div[data-testid="file-error-message"]`);
+    if (existingError) {
+      existingError.remove();
+    }
+
     if (/(jpe?g|png)/.test(fileType)) {
       formData.append('file', file);
       formData.append('email', email);
@@ -53,9 +59,6 @@ export default class NewBill {
       errorElement.style.color = 'red';
       fileInput.parentNode.appendChild(errorElement);
       fileInput.value = '';
-      setTimeout(() => {
-        errorElement.remove();
-      }, 10000);
     }
   };
   handleSubmit = (e) => {
