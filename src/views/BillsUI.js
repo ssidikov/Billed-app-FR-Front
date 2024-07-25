@@ -17,6 +17,7 @@ const row = (bill) => {
     </tr>
     `;
 };
+
 // Check if the date is valid
 const dateIsValid = (date) => {
   return !Number.isNaN(new Date(date).getTime());

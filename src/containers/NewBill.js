@@ -6,10 +6,11 @@ export default class NewBill {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
+    this.fileSelected = false;
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`);
     formNewBill.addEventListener('submit', this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    file.addEventListener('change', this.handleChangeFile);
+    file.addEventListener('change', this.handleChangeFile.bind(this));
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
@@ -17,13 +18,16 @@ export default class NewBill {
   }
   handleChangeFile = (e) => {
     e.preventDefault();
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0];
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem('user')).email;
     const fileType = file.type.split('/')[1];
-    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+
+    // Check if a file has been selected
+    this.fileSelected = !!file;
 
     // Remove any existing error messages
     const existingError = this.document.querySelector(`div[data-testid="file-error-message"]`);
@@ -31,6 +35,7 @@ export default class NewBill {
       existingError.remove();
     }
 
+    // Check if the file is a jpg, jpeg or png
     if (/(jpe?g|png)/.test(fileType)) {
       formData.append('file', file);
       formData.append('email', email);
@@ -49,6 +54,7 @@ export default class NewBill {
           this.fileName = fileName;
         })
         .catch((error) => console.error(error));
+      return true;
     } else {
       const errorElement = document.createElement('div');
       errorElement.setAttribute('data-testid', 'file-error-message');
@@ -59,15 +65,17 @@ export default class NewBill {
       errorElement.style.color = 'red';
       fileInput.parentNode.appendChild(errorElement);
       fileInput.value = '';
+      return false;
     }
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
     const email = JSON.parse(localStorage.getItem('user')).email;
+    if (!this.fileSelected) {
+      const errorFileInput = this.document.querySelector('.error-file');
+      errorFileInput.style.display = 'flex';
+      return;
+    }
     const bill = {
       email,
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,

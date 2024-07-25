@@ -52,7 +52,10 @@ export const card = (bill) => {
 };
 
 export const cards = (bills) => {
-  return bills && bills.length ? bills.map((bill) => card(bill)).join('') : '';
+  const sortedBills =
+    bills && bills.length ? [...bills].sort((a, b) => new Date(b.date) - new Date(a.date)) : [];
+
+  return sortedBills.map((bill) => card(bill)).join('');
 };
 
 export const getStatus = (index) => {
@@ -97,7 +100,6 @@ export default class {
       });
       $(`#open-bill${bill.id}`).css({ background: '#2A2B35' });
       $('.dashboard-right-container div').html(DashboardFormUI(bill));
-      // $('.vertical-navbar').css({ height: '180vh' });
       this.counter++;
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' });
