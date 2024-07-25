@@ -14,12 +14,13 @@ export default class Login {
     const formAdmin = this.document.querySelector(`form[data-testid="form-admin"]`);
     formAdmin.addEventListener('submit', this.handleSubmitAdmin);
   }
+
   handleSubmitEmployee = (e) => {
     e.preventDefault();
     const user = {
       type: 'Employee',
-      email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
-      password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
+      email: e.target.querySelector('input[data-testid="employee-email-input"]').value,
+      password: e.target.querySelector('input[data-testid="employee-password-input"]').value,
       status: 'connected',
     };
     this.localStorage.setItem('user', JSON.stringify(user));
@@ -35,21 +36,30 @@ export default class Login {
 
   handleSubmitAdmin = (e) => {
     e.preventDefault();
-    const user = {
-      type: 'Admin',
-      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
-      password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
-      status: 'connected',
-    };
-    this.localStorage.setItem('user', JSON.stringify(user));
-    this.login(user)
-      .catch((err) => this.createUser(user))
-      .then(() => {
-        this.onNavigate(ROUTES_PATH['Dashboard']);
-        this.PREVIOUS_LOCATION = ROUTES_PATH['Dashboard'];
-        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
-        document.body.style.backgroundColor = '#fff';
-      });
+
+    const emailInput = e.target.querySelector('input[data-testid="admin-email-input"]');
+    const passwordInput = e.target.querySelector('input[data-testid="admin-password-input"]');
+
+    // check if the inputs are found
+    if (emailInput && passwordInput) {
+      const user = {
+        type: 'Admin',
+        email: emailInput.value,
+        password: passwordInput.value,
+        status: 'connected',
+      };
+      this.localStorage.setItem('user', JSON.stringify(user));
+      this.login(user)
+        .catch((err) => this.createUser(user))
+        .then(() => {
+          this.onNavigate(ROUTES_PATH['Dashboard']);
+          this.PREVIOUS_LOCATION = ROUTES_PATH['Dashboard'];
+          PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
+          document.body.style.backgroundColor = '#fff';
+        });
+    } else {
+      console.error('Admin email or password input not found');
+    }
   };
 
   // not need to cover this function by tests
