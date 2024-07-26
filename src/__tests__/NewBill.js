@@ -2,21 +2,21 @@
  * @jest-environment jsdom
  */
 
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
-import { fireEvent, screen, waitFor } from '@testing-library/dom';
-import NewBillUI from '../views/NewBillUI.js';
-import NewBill from '../containers/NewBill.js';
-import { ROUTES, ROUTES_PATH } from '../constants/routes.js';
-import { localStorageMock } from '../__mocks__/localStorage';
-import mockStore from '../__mocks__/store';
-import router from '../app/Router.js';
+import userEvent from '@testing-library/user-event'; // Import userEvent for simulating user interactions
+import '@testing-library/jest-dom'; // Import custom DOM matchers
+import { fireEvent, screen, waitFor } from '@testing-library/dom'; // Import functions for interacting with and querying the DOM
+import NewBillUI from '../views/NewBillUI.js'; // Import the UI component for NewBill page
+import NewBill from '../containers/NewBill.js'; // Import the NewBill container component
+import { ROUTES, ROUTES_PATH } from '../constants/routes.js'; // Import the route constants
+import { localStorageMock } from '../__mocks__/localStorage'; // Import mock localStorage for testing
+import mockStore from '../__mocks__/store'; // Import mock store for testing
+import router from '../app/Router.js'; // Import router to handle routing
 
-// Mock the store module
+// Mock the store module to use the mockStore
 jest.mock('../app/Store', () => mockStore);
 
 describe('NewBill Page Tests', () => {
-  // Setup for each test
+  // Setup before each test
   beforeEach(() => {
     // Mock localStorage and set a default user
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
@@ -25,7 +25,7 @@ describe('NewBill Page Tests', () => {
       JSON.stringify({ type: 'Employee', email: 'employee@test.ltd' })
     );
 
-    // Set up the root element and initialize the router
+    // Set up a root element in the DOM and initialize the router
     const root = document.createElement('div');
     root.setAttribute('id', 'root');
     document.body.appendChild(root);
@@ -33,19 +33,21 @@ describe('NewBill Page Tests', () => {
   });
 
   describe('When I am on the NewBill Page', () => {
+    // Test to ensure the new bill form is rendered
     test('Then the new bill form should be rendered', () => {
       // Render the NewBill UI
       document.body.innerHTML = NewBillUI();
 
-      // Verify that the new bill form is present
+      // Verify that the new bill form is present in the document
       expect(screen.getByTestId('form-new-bill')).toBeInTheDocument();
     });
 
+    // Test to ensure that a file with an invalid extension (e.g., PDF) cannot be uploaded
     test("Then I can't upload a file with an extension other than png, jpg, or jpeg", () => {
       // Render the NewBill UI
       document.body.innerHTML = NewBillUI();
 
-      // Create an instance of NewBill
+      // Create an instance of NewBill with the required parameters
       const newBill = new NewBill({
         document,
         onNavigate,
@@ -65,12 +67,12 @@ describe('NewBill Page Tests', () => {
       expect(handleChangeFile).toHaveBeenCalled();
       expect(input.value).toBe('');
     });
-
+    // Test to ensure that an error message is displayed when an invalid file format (PDF) is uploaded
     test('Then an error message should be displayed when uploading an invalid file format (pdf)', async () => {
       // Render the NewBill UI
       document.body.innerHTML = NewBillUI();
 
-      // Create an instance of NewBill
+      // Create an instance of NewBill with the required parameters
       const newBill = new NewBill({
         document,
         onNavigate: jest.fn(),
@@ -89,7 +91,7 @@ describe('NewBill Page Tests', () => {
       // Upload the PDF file
       userEvent.upload(input, file);
 
-      // Wait for the error message to appear and verify its content
+      // Wait for the error message to be displayed
       await waitFor(() => {
         const errorMessage = screen.getByTestId('file-error-message');
         expect(errorMessage).toBeInTheDocument();
@@ -98,12 +100,12 @@ describe('NewBill Page Tests', () => {
         );
       });
     });
-
+    // Test to ensure that an error message is displayed when an invalid file format (PDF) is uploaded
     test('Then I can upload a file with a valid format (png, jpg, or jpeg)', () => {
       // Render the NewBill UI
       document.body.innerHTML = NewBillUI();
 
-      // Create an instance of NewBill
+      // Create an instance of NewBill with the required parameters
       const newBill = new NewBill({
         document,
         onNavigate,
@@ -127,12 +129,12 @@ describe('NewBill Page Tests', () => {
       expect(input.files[0]).toStrictEqual(file);
       expect(input.files[0].name).toBe('receipt.jpg');
     });
-
+    // Test to ensure that the form is submitted and a new bill is created
     test('Then it should create a new bill', () => {
       // Render the NewBill UI
       document.body.innerHTML = NewBillUI();
 
-      // Create an instance of NewBill
+      // Create an instance of NewBill with the required parameters
       const newBill = new NewBill({
         document,
         onNavigate,
@@ -145,14 +147,18 @@ describe('NewBill Page Tests', () => {
       const form = screen.getByTestId('form-new-bill');
       form.addEventListener('submit', handleSubmit);
 
-      // Fill in the form fields
-      userEvent.type(screen.getByTestId('datepicker'), '2024-07-24');
-      userEvent.type(screen.getByTestId('amount'), '100');
-      userEvent.type(screen.getByTestId('pct'), '20');
+      // Test data for the new bill
+      userEvent.type(screen.getByTestId('expense-type'), 'Transports'); // Select the first option
+      userEvent.type(screen.getByTestId('expense-name'), 'Train Paris - Lyon'); // Name of the expense
+      userEvent.type(screen.getByTestId('datepicker'), '2024-07-24'); // Date of the expense
+      userEvent.type(screen.getByTestId('amount'), '100'); // Amount of the expense
+      userEvent.type(screen.getByTestId('vat'), '20'); // VAT of the expense
+      userEvent.type(screen.getByTestId('pct'), '20'); // Percentage of the expense
+      userEvent.type(screen.getByTestId('commentary'), 'Test data'); // Commentary of the expense
       userEvent.upload(
         screen.getByTestId('file'),
         new File(['image'], 'receipt.jpg', { type: 'image/jpg' })
-      );
+      ); // Upload the receipt image file (jpg)
 
       // Submit the form
       fireEvent.submit(form);

@@ -3,13 +3,13 @@
 }
 
 .col-half {
-  margin:auto;
+  margin: auto;
   width: 75%;
   margin-top: 16px;
 }
 
 .col-half-row {
-  display:flex;
+  display: flex;
   width: 75%;
   margin-left: 20px;
   margin-top: 16px;
@@ -31,10 +31,6 @@ label {
 
 .flex-col {
   margin-left: 50px;
-}
-
-.white-text {
-  color: #fff;
 }
 
 #btn-send-bill {
