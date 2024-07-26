@@ -37,6 +37,7 @@ export default class Login {
   handleSubmitAdmin = (e) => {
     e.preventDefault();
 
+    // Select the email and password input fields for the admin
     const emailInput = e.target.querySelector('input[data-testid="admin-email-input"]');
     const passwordInput = e.target.querySelector('input[data-testid="admin-password-input"]');
 
@@ -58,6 +59,7 @@ export default class Login {
           document.body.style.backgroundColor = '#fff';
         });
     } else {
+      // Log an error if the admin email or password input is not found
       console.error('Admin email or password input not found');
     }
   };

@@ -52,6 +52,7 @@ export const card = (bill) => {
 };
 
 export const cards = (bills) => {
+  // Sort bills by date in descending order
   const sortedBills =
     bills && bills.length ? [...bills].sort((a, b) => new Date(b.date) - new Date(a.date)) : [];
 
@@ -151,7 +152,7 @@ export default class {
     }
 
     bills.forEach((bill) => {
-      $(`#open-bill${bill.id}`).off('click'); // Debugging: Added the off method to avoid multiple click events
+      $(`#open-bill${bill.id}`).off('click'); // Added the off method to avoid multiple click events
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills));
     });
 

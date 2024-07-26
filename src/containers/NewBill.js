@@ -6,11 +6,11 @@ export default class NewBill {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-    this.fileSelected = false;
+    this.fileSelected = false; // Initialize a flag to check if a file has been selected
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`);
     formNewBill.addEventListener('submit', this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    file.addEventListener('change', this.handleChangeFile.bind(this));
+    file.addEventListener('change', this.handleChangeFile.bind(this)); // Bind the method to retain the class context
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
@@ -56,6 +56,7 @@ export default class NewBill {
         .catch((error) => console.error(error));
       return true;
     } else {
+      // Display an error message if the file type is not supported
       const errorElement = document.createElement('div');
       errorElement.setAttribute('data-testid', 'file-error-message');
       errorElement.textContent =

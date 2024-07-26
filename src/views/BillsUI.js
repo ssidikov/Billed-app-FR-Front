@@ -25,12 +25,13 @@ const dateIsValid = (date) => {
 
 const rows = (data) => {
   if (data && data.length) {
+    // Filter out bills with invalid dates and sort the remaining bills by date in descending order
     const sortedBills = data
-      .filter((bill) => dateIsValid(bill.date))
+      .filter((bill) => dateIsValid(bill.date)) // Filter out bills with invalid dates
       .sort((a, b) => {
         const dateA = new Date(a.date).getTime();
         const dateB = new Date(b.date).getTime();
-        return dateB - dateA;
+        return dateB - dateA; // Sort bills by date, newest first
       });
     return sortedBills.map((bill) => row(bill)).join('');
   } else {
